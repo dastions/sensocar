@@ -87,80 +87,28 @@ Crea un archivo `.env` en el directorio raíz del proyecto con las siguientes va
 
 ```env
 # Variables requeridas - Solicitar a support@dastions.com
-SENSOCAR_SERVER_API=
-SENSOCAR_API_KEY=
+SENSOCAR_SERVER_API=<server-api>
+SENSOCAR_API_KEY=<api-key>
 SERVER_API=https://staging.appsmartpay.com
-DEVICE_API_KEY=
-DEVICE_TOKEN=
+DEVICE_API_KEY=<api-key>
+DEVICE_TOKEN=<api-token>
 
 # Configuración del servidor
 HTTP_PORT=3010
 TCP_PORT=3011
-
-# Configuración OCR (si aplica)
-OCR_SERVER_API=https://ocr.dastions.com
-OCR_API_KEY=DASTIONS.OCR.123
 
 # Configuración de fotos (si aplica)
 PHOTO_SERVER_API=https://blob.dastions.com
 PHOTO_API_KEY=
 
 # Identificación del dispositivo
-DEVICE_ID=M2
-DEVICE_NAME=Margalef_2
+DEVICE_ID=BP_M01
+DEVICE_NAME=Bascula_Sensocar_1
 
 # Configuración adicional
 INTERNET_CHECK=true
 DEVICE_DATA_INTERVAL=30000
 JWT_SECRET_KEY=
-
-# Configuración de lectores (ajustar según tu configuración)
-LECTOR_NAME_1=QR Reader IN
-LECTOR_IP_1=192.168.10.22
-LECTOR_PORT_1=4001
-
-KEYPAD_NAME_1=KeyPad Reader IN
-KEYPAD_IP_1=192.168.10.23
-KEYPAD_PORT_1=4001
-
-LECTOR_NAME_2=QR Reader OUT
-LECTOR_IP_2=192.168.10.24
-LECTOR_PORT_2=4001
-
-KEYPAD_NAME_2=KeyPad Reader OUT
-KEYPAD_IP_2=192.168.10.21
-KEYPAD_PORT_2=4001
-
-# Configuración DIO (si aplica)
-DIO_IP=192.168.10.25
-DIO_PORT=80
-DIO_USER=admin
-DIO_PASSWORD=
-BARRERA_RELAY=0
-BARRERA_TIMEOUT=6000
-BARRERA_ENABLED=true
-
-# Configuración de cámaras (si aplica)
-CAMERA_ID_1=CAMERA_IN
-CAMERA_MODEL_1=axis
-CAMERA_IP_1=192.168.1.5
-CAMERA_PORT_1=80
-CAMERA_AUTO_1=false
-CAMERA_USER_1=admin
-CAMERA_PASSWORD_1=
-
-CAMERA_ID_2=CAMERA_OUT
-CAMERA_MODEL_2=dahua
-CAMERA_IP_2=192.168.1.5
-CAMERA_PORT_2=80
-CAMERA_AUTO_2=false
-CAMERA_USER_2=admin
-CAMERA_PASSWORD_2=
-
-# Debug (opcional)
-KEYPAD_DEBUB=false
-LECTOR_DEBUB=false
-DIO_DEBUG=false
 ```
 
 ### Paso 2: Solicitar credenciales
