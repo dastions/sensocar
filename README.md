@@ -8,10 +8,6 @@ Este documento proporciona instrucciones completas para instalar y configurar el
 - [Instalación de Docker en Raspberry Pi](#instalación-de-docker-en-raspberry-pi)
 - [Configuración del Entorno](#configuración-del-entorno)
 - [Docker Compose](#docker-compose)
-- [API del Servicio](#api-del-servicio)
-- [API Externa (SENSOCAR_SERVER)](#api-externa-sensocar_server)
-- [Prueba del Servidor](#prueba-del-servidor)
-- [Solución de Problemas](#solución-de-problemas)
 - [Licencia](#licencia)
 
 ## Requisitos
