@@ -19,7 +19,17 @@ Este documento proporciona instrucciones completas para instalar y configurar el
 - Raspberry Pi con Raspberry Pi OS (preferiblemente la versión más reciente)
 - Acceso a internet para descargar dependencias
 - Acceso SSH a la Raspberry Pi (opcional pero recomendado)
-- Credenciales de acceso proporcionadas por Dastions
+- Credenciales de acceso a SmarPay proporcionadas por Dastions
+
+### Creación de Usuario
+- [Entorno de pruebas](https://dastions.z28.web.core.windows.net/users/login)
+- [Entorno de producción](https://app.appsmartpay.com/users/login)
+
+### Solicitar Rol adminitrativo:
+Una vez creado el usuario, **solicita a dastions** que te suban a role administrador de dispositivos y te añadan tu monedero.
+
+
+# Only Developers
 
 ## Instalación de Docker en Raspberry Pi
 
@@ -115,13 +125,15 @@ JWT_SECRET_KEY=
 
 Las siguientes variables son **requeridas** y deben solicitarse a **support@dastions.com**:
 
-- `SENSOCAR_SERVER_API` - URL del servidor Sensocar
-- `SENSOCAR_API_KEY` - Clave de API para autenticación
+- `SENSOCAR_SERVER_API` - URL del servidor local Sensocar (`http://host.docker.internal:2001`)
+- `SENSOCAR_API_KEY` - Clave de API para autenticación *si es necesaria*
 - `SERVER_API` - URL del servidor (por defecto: `https://staging.appsmartpay.com`)
-- `DEVICE_API_KEY` - Clave de API del dispositivo
-- `DEVICE_TOKEN` - Token de autenticación del dispositivo
+- `DEVICE_API_KEY` - Clave de API del dispositivo (support@dastions.com)
+- `DEVICE_TOKEN` - Token de autenticación del dispositivo (support@dastions.com)
 
-## Docker Compose
+  
+
+## Arrancar el servicio
 
 ### Archivo docker-compose.yml
 
@@ -148,13 +160,10 @@ services:
     environment:
       - TCP_PORT=3001
       - HTTP_PORT=3000
-      - SERVER_API=http://host.docker.internal:2001
-      - OCR_SERVER_API=https://ocr.dastions.com
+      - SENSOCAR_SERVER_API=http://host.docker.internal:2001
 ```
 
 **Nota:** Asegúrate de que el archivo `.env` esté en el mismo directorio que el `docker-compose.yml`.
-
-### Ejecutar el servicio
 
 Para iniciar el servicio:
 
@@ -179,243 +188,6 @@ Para reiniciar el servicio:
 ```bash
 docker compose restart
 ```
-
-## API del Servicio
-
-El servicio expone los siguientes endpoints:
-
-### POST `/api/sensocar/lector`
-
-Registra una lectura del lector QR/tarjeta.
-
-**Request Body:**
-```json
-{
-  "code": "string"
-}
-```
-
-**Response:**
-```json
-{
-  "data": "ok"
-}
-```
-
-**Ejemplo con curl:**
-```bash
-curl -X POST http://localhost:3010/api/sensocar/lector \
-  -H "Content-Type: application/json" \
-  -d '{"code": "123456789"}'
-```
-
-### POST `/api/sensocar/weight`
-
-Registra el peso detectado por la báscula.
-
-**Request Body:**
-```json
-{
-  "weight": 1250
-}
-```
-
-**Response:**
-```json
-{
-  "data": "ok"
-}
-```
-
-**Ejemplo con curl:**
-```bash
-curl -X POST http://localhost:3010/api/sensocar/weight \
-  -H "Content-Type: application/json" \
-  -d '{"weight": 1250}'
-```
-
-**Nota:** Si el peso es mayor a 100 y el estado actual es 0, el sistema cambiará el estado a 1.
-
-## API Externa (SENSOCAR_SERVER)
-
-El servicio utiliza las siguientes APIs para comunicarse con el servidor Sensocar:
-
-### GET `/weight`
-
-Obtiene el peso actual del servidor Sensocar.
-
-**Headers:**
-```
-Authorization: Bearer {SENSOCAR_API_KEY}
-```
-
-**Response:**
-```json
-{
-  // Respuesta del servidor Sensocar
-}
-```
-
-### POST `/display`
-
-Envía un mensaje para mostrar en el display del dispositivo Sensocar.
-
-**Headers:**
-```
-Authorization: Bearer {SENSOCAR_API_KEY}
-```
-
-**Request Body:**
-```json
-{
-  "message": "Texto a mostrar"
-}
-```
-
-**Response:**
-```json
-{
-  // Respuesta del servidor Sensocar
-}
-```
-
-### POST `/payment/success`
-
-Notifica al servidor Sensocar que un pago se completó exitosamente.
-
-**Headers:**
-```
-Authorization: Bearer {SENSOCAR_API_KEY}
-```
-
-**Request Body:**
-```json
-{
-  "token": "payment_token",
-  "payment": {
-    // Datos del pago
-  }
-}
-```
-
-**Response:**
-```json
-{
-  // Respuesta del servidor Sensocar
-}
-```
-
-### POST `/payment/error`
-
-Notifica al servidor Sensocar que ocurrió un error en el pago.
-
-**Headers:**
-```
-Authorization: Bearer {SENSOCAR_API_KEY}
-```
-
-**Request Body:**
-```json
-{
-  "token": "payment_token",
-  "payment": {
-    // Datos del pago
-  }
-}
-```
-
-**Response:**
-```json
-{
-  // Respuesta del servidor Sensocar
-}
-```
-
-## Prueba del Servidor
-
-### Paso 1: Verificar que el contenedor está corriendo
-
-```bash
-docker compose ps
-```
-
-Deberías ver el servicio `sensocar` con estado `Up`.
-
-### Paso 2: Verificar los logs
-
-```bash
-docker compose logs sensocar
-```
-
-Busca mensajes que indiquen que el servicio está corriendo correctamente:
-- `> Dastions Box running on port 3010`
-- `> Socket.io running on port 4001`
-
-### Paso 3: Probar el endpoint de salud
-
-```bash
-curl http://localhost:3010/api/sensocar/lector \
-  -X POST \
-  -H "Content-Type: application/json" \
-  -d '{"code": "test123"}'
-```
-
-Deberías recibir una respuesta `{"data": "ok"}`.
-
-### Paso 4: Probar el endpoint de peso
-
-```bash
-curl http://localhost:3010/api/sensocar/weight \
-  -X POST \
-  -H "Content-Type: application/json" \
-  -d '{"weight": 500}'
-```
-
-Deberías recibir una respuesta `{"data": "ok"}`.
-
-### Paso 5: Verificar conectividad con el servidor Sensocar
-
-Revisa los logs para asegurarte de que no hay errores de conexión con `SENSOCAR_SERVER_API`:
-
-```bash
-docker compose logs -f sensocar | grep -i "sensocar\|error"
-```
-
-## Solución de Problemas
-
-### El contenedor no inicia
-
-1. Verifica que todas las variables de entorno requeridas estén configuradas en el archivo `.env`
-2. Verifica los logs: `docker compose logs sensocar`
-3. Verifica que los puertos 3010 y 4001 no estén siendo usados por otro proceso:
-   ```bash
-   sudo netstat -tulpn | grep -E '3010|4001'
-   ```
-
-### Error de conexión con SENSOCAR_SERVER_API
-
-1. Verifica que `SENSOCAR_SERVER_API` esté correctamente configurado en el archivo `.env`
-2. Verifica que `SENSOCAR_API_KEY` sea válido
-3. Verifica la conectividad de red desde la Raspberry Pi:
-   ```bash
-   curl -H "Authorization: Bearer {SENSOCAR_API_KEY}" {SENSOCAR_SERVER_API}/weight
-   ```
-
-### El servicio no responde a las peticiones
-
-1. Verifica que el servicio esté corriendo: `docker compose ps`
-2. Verifica los logs para errores: `docker compose logs -f sensocar`
-3. Verifica que el firewall no esté bloqueando los puertos:
-   ```bash
-   sudo ufw status
-   ```
-
-### Docker no está disponible después de la instalación
-
-Si después de agregar tu usuario al grupo docker no puedes ejecutar comandos sin `sudo`:
-
-1. Cierra sesión completamente y vuelve a iniciar sesión
-2. O reinicia la Raspberry Pi: `sudo reboot`
 
 ## Licencia
 
